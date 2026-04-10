@@ -36,6 +36,54 @@ backend/
 │── scaler.pkl
 │── metrics.json
 
+
+### 5️⃣ Open in Browser
+http://127.0.0.1:5000/
 frontend/
 │── index.html
 
+
+---
+
+## 📊 Sample Output
+
+- Current Price: ₹1346  
+- Predicted Price: ₹1349  
+- Decision: BUY  
+- R² Score: 0.90  
+
+---
+
+## 🧠 Model Details
+
+- Uses **LSTM (Long Short-Term Memory)** network
+- Trained on historical stock closing prices
+- Input sequence: last 60 days
+- Output: next day prediction
+
+---
+
+## 📈 Evaluation Metrics
+
+- **MAE (Mean Absolute Error)**
+- **RMSE (Root Mean Squared Error)**
+- **R² Score (Model Accuracy)**
+
+---
+
+## 🔥 Future Improvements
+
+- Multi-day forecasting
+- Live candlestick charts
+- User authentication system
+- Deploy on AWS / Render
+
+---
+
+## 👩‍💻 Author
+
+Ayushi Agarwal
+
+---
+
+## ⭐ If you like this project, give it a star!
