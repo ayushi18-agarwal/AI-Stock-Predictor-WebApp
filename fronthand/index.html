@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stock Predictor</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(135deg, #141e30, #243b55);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      width: 420px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+
+    input {
+      padding: 10px;
+      width: 70%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px;
+      border: none;
+      background: #243b55;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 15px;
+      display: none;
+      text-align: left;
+    }
+
+    .good { color: green; }
+    .bad { color: red; }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>📈 Stock Predictor</h2>
+
+  <input id="stock" placeholder="RELIANCE.NS">
+  <button type="button" onclick="predict()">Predict</button>
+
+  <div id="resultBox" class="result">
+    <p><b>Stock:</b> <span id="s"></span></p>
+    <p><b>Current:</b> ₹<span id="c"></span></p>
+    <p><b>Predicted:</b> ₹<span id="p"></span></p>
+    <p><b>Decision:</b> <span id="d"></span></p>
+
+    <hr>
+
+    <p><b>MAE:</b> <span id="mae"></span></p>
+    <p><b>RMSE:</b> <span id="rmse"></span></p>
+    <p><b>R² Score:</b> <span id="r2"></span></p>
+  </div>
+
+  <canvas id="chart"></canvas>
+</div>
+
+<script>
+let chart;
+
+function predict() {
+  let stock = document.getElementById("stock").value;
+
+  if (!stock) {
+    alert("Enter stock!");
+    return;
+  }
+
+  fetch(`/predict?stock=${stock}`)
+    .then(res => res.json())
+    .then(data => {
+
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+
+      document.getElementById("resultBox").style.display = "block";
+
+      document.getElementById("s").innerText = data.stock;
+      document.getElementById("c").innerText = data.current_price.toFixed(2);
+      document.getElementById("p").innerText = data.predicted_price.toFixed(2);
+
+      let d = document.getElementById("d");
+      d.innerText = data.decision;
+      d.className = data.decision === "BUY" ? "good" : "bad";
+
+      document.getElementById("mae").innerText = data.mae.toFixed(2);
+      document.getElementById("rmse").innerText = data.rmse.toFixed(2);
+
+      let r2 = document.getElementById("r2");
+      r2.innerText = data.r2.toFixed(2);
+      r2.className = data.r2 > 0.6 ? "good" : "bad";
+
+      const ctx = document.getElementById("chart").getContext("2d");
+
+      if (chart) chart.destroy();
+
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Current', 'Predicted'],
+          datasets: [{
+            label: 'Price',
+            data: [data.current_price, data.predicted_price]
+          }]
+        }
+      });
+
+    })
+    .catch(err => {
+      alert("Backend error");
+      console.log(err);
+    });
+}
+</script>
+
+</body>
+</html>
